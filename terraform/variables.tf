@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "cluster_name" {
   description = "Name used to tag the EC2 instance and its security group"
   type        = string
-  default     = "shoplist"
+    default     = "shoplist-dina"
 }
 
 variable "instance_type" {
