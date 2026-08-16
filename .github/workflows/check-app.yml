@@ -5,6 +5,9 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Curl the app
+      - name: Curl the frontend
         run: |
           curl -v -m 15 http://3.251.72.69:30080/ || true
+      - name: Curl the backend API
+        run: |
+          curl -v -m 15 http://3.251.72.69:30080/api/products || true
