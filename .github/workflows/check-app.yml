@@ -5,9 +5,37 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Curl the frontend
+      - name: Add sample products
         run: |
-          curl -v -m 15 http://3.251.72.69:30080/ || true
-      - name: Curl the backend API
+          curl -s -X POST http://3.251.72.69:30080/api/products -H "Content-Type: application/json" -d '{"name":"Milk","price":6.9}'
+          curl -s -X POST http://3.251.72.69:30080/api/products -H "Content-Type: application/json" -d '{"name":"Bread","price":8.5}'
+          curl -s -X POST http://3.251.72.69:30080/api/products -H "Content-Type: application/json" -d '{"name":"Eggs","price":14.9}'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Screenshot the app
         run: |
-          curl -v -m 15 http://3.251.72.69:30080/api/products || true
+          node -e "
+          const puppeteer = require('puppeteer');
+          (async () => {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.setViewport({width: 1280, height: 800});
+            await page.goto('http://3.251.72.69:30080', {waitUntil: 'networkidle0', timeout: 30000});
+            await new Promise(r => setTimeout(r, 1500));
+            await page.screenshot({path: 'app-screenshot.png', fullPage: true});
+            await browser.close();
+          })();
+          "
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshot
+          path: app-screenshot.png
